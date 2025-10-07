@@ -98,22 +98,27 @@ HRESULT __stdcall hookGetDeviceState(IDirectInputDevice8* pThis, DWORD cbData, L
 				if (camera != nullptr)
 				{
 					float degrees;
+					float modification;
 					float radians = funcGetCameraYaw(camera);
-					if (funcGetFreeFly(camera))
+					bool isFreeFly = funcGetFreeFly(camera);
+					modification = ((LPDIMOUSESTATE2)lpvData)->lX * 0.1;
+					if ((isFreeFly && !config.invertHorizontalFreeFly) || (!isFreeFly && !config.invertHorizontal))
 					{
-						degrees = std::fmod((radians * 180 / M_PI) - ((LPDIMOUSESTATE2)lpvData)->lX * 0.1, 360);
+						modification *= -1;
 					}
-					else
-					{
-						degrees = std::fmod((radians * 180 / M_PI) + ((LPDIMOUSESTATE2)lpvData)->lX * 0.1, 360);
-					}
+					degrees = std::fmod((radians * 180 / M_PI) + modification, 360);
 					if (degrees < 0) {
 						degrees += 360.0;
 					}
 					originalSetCameraYaw(camera, degrees * M_PI / 180);
 
 					radians = funcGetCameraPitch(camera);
-					degrees = (radians * 180 / M_PI) + ((LPDIMOUSESTATE2)lpvData)->lY * 0.1;
+					modification = ((LPDIMOUSESTATE2)lpvData)->lY * 0.1;
+					if (isFreeFly && config.invertVerticalFreeFly || !isFreeFly && config.invertVertical)
+					{
+						modification *= -1;
+					}
+					degrees = (radians * 180 / M_PI) + modification;
 					if (std::abs(degrees) < 90)
 					{
 						originalSetCameraPitch(camera, degrees * M_PI / 180);
@@ -218,6 +223,15 @@ void setup()
 	originalSetCameraYaw = (SetCameraYawT)trampHook((char*)funcSetCameraYaw, (char*)hookSetCameraYaw, 6);
 	originalSetCameraPitch = (SetCameraPitchT)trampHook((char*)funcSetCameraPitch, (char*)hookSetCameraPitch, 6);
 	originalWorldCameraUpdate = (WorldCameraUpdateT)trampHook((char*)funcWorldCameraUpdate, (char*)hookWorldCameraUpdate, 6);
+
+	char path[MAX_PATH];
+	GetModuleFileNameA(engine, path, MAX_PATH);
+	std::string dir(path);
+	dir = dir.substr(0, dir.find_last_of("\\/"));
+	std::string configPath = dir + "\\config.ini";
+	ConfigManager configManager(configPath);
+	configManager.load();
+	config = configManager.getConfig();
 
 #if DEBUG_OUTPUT
 	std::cout << std::hex << "Game.dll base: " << game << std::endl;

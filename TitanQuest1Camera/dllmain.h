@@ -2,6 +2,7 @@
 #include "includes.h"
 #include "hook.h"
 #include "vector3d.h"
+#include "configManager.h"
 
 #if DEBUG_OUTPUT
 FILE* pCout = nullptr;
@@ -61,6 +62,8 @@ bool ascendPressed = false;
 bool descendPressed = false;
 bool fovIncreasePressed = false;
 bool fovDecreasePressed = false;
+
+Config config;
 
 // Game hooks
 void __fastcall hookSetGameLoading(void* gGameEngine, void* unused, bool isLoading);

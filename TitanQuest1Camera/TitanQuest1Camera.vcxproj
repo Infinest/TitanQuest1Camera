@@ -147,12 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="configManager.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="vector3d.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="configManager.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="vector3d.cpp" />

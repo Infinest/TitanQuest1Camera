@@ -1,7 +1,10 @@
 #pragma once
-#include <iostream>
 #include <windows.h>
 #include <Psapi.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 #define DEBUG_OUTPUT false
 #define DIRECTINPUT_VERSION 0x800
